@@ -254,6 +254,46 @@ const VideoCarousel = () => {
 };
 
 const ContactSection = () => {
+  const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
+  const [errorMsg, setErrorMsg] = useState("");
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setStatus("loading");
+    setErrorMsg("");
+
+    const formData = new FormData(e.currentTarget);
+    const data = {
+      name: formData.get('name'),
+      email: formData.get('email'),
+      body: formData.get('body'),
+    };
+
+    try {
+      const response = await fetch("/api/contact", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      });
+
+      const result = await response.json();
+
+      if (response.ok) {
+        setStatus("success");
+        (e.target as HTMLFormElement).reset();
+      } else {
+        setStatus("error");
+        setErrorMsg(result.error || "Ocurrió un error al enviar tu mensaje.");
+      }
+    } catch (err) {
+      console.error("Submit error:", err);
+      setStatus("error");
+      setErrorMsg("Ocurrió un error de red.");
+    }
+  };
+
   return (
     <section id="contacto" className="py-24 bg-black">
       <div className="container px-4 mx-auto">
@@ -289,18 +329,7 @@ const ContactSection = () => {
             className="p-8 border border-white/10 bg-zinc-900/50 backdrop-blur-sm"
           >
             <form 
-              onSubmit={(e) => {
-                e.preventDefault();
-                const formData = new FormData(e.currentTarget);
-                const name = formData.get('name');
-                const email = formData.get('email');
-                const body = formData.get('body');
-                
-                const subject = encodeURIComponent(`Nuevo contacto de: ${name}`);
-                const bodyText = encodeURIComponent(`Nombre: ${name}\nEmail: ${email}\n\nMensaje:\n${body}`);
-                
-                window.location.href = `mailto:baez@hitster.page?subject=${subject}&body=${bodyText}`;
-              }}
+              onSubmit={handleSubmit}
               className="space-y-6"
             >
               <div className="grid gap-6 md:grid-cols-2">
@@ -312,6 +341,7 @@ const ContactSection = () => {
                     required
                     className="w-full px-0 py-3 text-white transition-colors bg-transparent border-b border-white/10 focus:border-white outline-none"
                     placeholder="Tu nombre"
+                    disabled={status === "loading"}
                   />
                 </div>
                 <div className="space-y-2">
@@ -322,6 +352,7 @@ const ContactSection = () => {
                     required
                     className="w-full px-0 py-3 text-white transition-colors bg-transparent border-b border-white/10 focus:border-white outline-none"
                     placeholder="email@tuempresa.com"
+                    disabled={status === "loading"}
                   />
                 </div>
               </div>
@@ -333,13 +364,28 @@ const ContactSection = () => {
                   required
                   className="w-full px-0 py-3 text-white transition-colors bg-transparent border-b border-white/10 focus:border-white outline-none resize-none"
                   placeholder="Háblanos de tu visión..."
+                  disabled={status === "loading"}
                 />
               </div>
+              
+              {status === "success" && (
+                <div className="p-4 text-sm font-medium text-green-400 bg-green-400/10 border border-green-400/20">
+                  ¡Mensaje enviado con éxito! Nos pondremos en contacto pronto.
+                </div>
+              )}
+              {status === "error" && (
+                <div className="p-4 text-sm font-medium text-red-400 bg-red-400/10 border border-red-400/20">
+                  {errorMsg}
+                </div>
+              )}
+
               <button 
                 type="submit"
-                className="group flex items-center justify-center gap-3 w-full py-5 text-sm font-bold tracking-[0.2em] text-black uppercase bg-white hover:bg-zinc-200 transition-all font-heading"
+                disabled={status === "loading" || status === "success"}
+                className="group flex items-center justify-center gap-3 w-full py-5 text-sm font-bold tracking-[0.2em] text-black uppercase bg-white hover:bg-zinc-200 transition-all font-heading disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                Enviar Propuesta <Send size={16} className="transition-transform group-hover:translate-x-1 group-hover:-translate-y-1" />
+                {status === "loading" ? "Enviando..." : status === "success" ? "Enviado" : "Enviar Propuesta"}
+                {status !== "loading" && status !== "success" && <Send size={16} className="transition-transform group-hover:translate-x-1 group-hover:-translate-y-1" />}
               </button>
             </form>
           </motion.div>

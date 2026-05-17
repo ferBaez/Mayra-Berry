@@ -289,9 +289,18 @@ const ContactSection = () => {
             className="p-8 border border-white/10 bg-zinc-900/50 backdrop-blur-sm"
           >
             <form 
-              action="mailto:baez@hitster.page" 
-              method="get" 
-              encType="text/plain"
+              onSubmit={(e) => {
+                e.preventDefault();
+                const formData = new FormData(e.currentTarget);
+                const name = formData.get('name');
+                const email = formData.get('email');
+                const body = formData.get('body');
+                
+                const subject = encodeURIComponent(`Nuevo contacto de: ${name}`);
+                const bodyText = encodeURIComponent(`Nombre: ${name}\nEmail: ${email}\n\nMensaje:\n${body}`);
+                
+                window.location.href = `mailto:baez@hitster.page?subject=${subject}&body=${bodyText}`;
+              }}
               className="space-y-6"
             >
               <div className="grid gap-6 md:grid-cols-2">

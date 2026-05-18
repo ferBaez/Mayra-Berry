@@ -25,10 +25,22 @@ async function startServer() {
   // API Routes
   app.post("/api/contact", async (req, res) => {
     try {
-      const { name, email, body } = req.body;
+      const { name, email, body, botcheck } = req.body;
       
+      // Honeypot check for bots
+      if (botcheck) {
+        // Silently drop but return success to fool the bot
+        return res.status(200).json({ success: true });
+      }
+
       if (!name || !email || !body) {
         return res.status(400).json({ error: "Name, email, and message are required." });
+      }
+      
+      // Basic email validation
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(email)) {
+        return res.status(400).json({ error: "Por favor, ingresa un correo electrónico válido." });
       }
 
       let resend;

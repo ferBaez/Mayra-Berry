@@ -62,15 +62,9 @@ const Hero = () => {
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 1.2, ease: "easeOut" }}
         >
-          <span className="inline-block px-5 py-1.5 mb-8 text-[10px] md:text-xs font-bold tracking-[0.4em] uppercase border border-white/20 rounded-full text-white/90 backdrop-blur-sm bg-white/5">
-            Director de Cine & Narrativa Visual
-          </span>
           <h1 className="text-5xl md:text-[10rem] font-black tracking-tighter text-white uppercase leading-[0.8] mb-10 font-heading">
             Mayra <br /><span className="text-transparent border-text stroke-white">Berry</span>
           </h1>
-          <p className="max-w-2xl mx-auto text-lg md:text-2xl text-white/70 font-light leading-snug tracking-tight">
-            Capturando la esencia humana a través de lentes cinematográficas. Historias que trascienden la pantalla.
-          </p>
           <motion.div 
             className="mt-14"
             whileHover={{ scale: 1.05 }}
@@ -267,6 +261,7 @@ const ContactSection = () => {
       name: formData.get('name'),
       email: formData.get('email'),
       body: formData.get('body'),
+      botcheck: formData.get('botcheck'), // Honeypot field
     };
 
     try {
@@ -333,12 +328,18 @@ const ContactSection = () => {
               className="space-y-6"
             >
               <div className="grid gap-6 md:grid-cols-2">
+                {/* Honeypot field - hidden from users but visible to bots */}
+                <div style={{ display: 'none' }} aria-hidden="true">
+                  <label htmlFor="botcheck">Do not fill this out if you are human</label>
+                  <input type="text" name="botcheck" id="botcheck" tabIndex={-1} autoComplete="off" />
+                </div>
                 <div className="space-y-2">
                   <label className="text-xs font-bold tracking-widest text-zinc-500 uppercase">Nombre</label>
                   <input 
                     name="name"
                     type="text" 
                     required
+                    autoComplete="name"
                     className="w-full px-0 py-3 text-white transition-colors bg-transparent border-b border-white/10 focus:border-white outline-none"
                     placeholder="Tu nombre"
                     disabled={status === "loading"}
@@ -350,6 +351,7 @@ const ContactSection = () => {
                     name="email"
                     type="email" 
                     required
+                    autoComplete="email"
                     className="w-full px-0 py-3 text-white transition-colors bg-transparent border-b border-white/10 focus:border-white outline-none"
                     placeholder="email@tuempresa.com"
                     disabled={status === "loading"}
@@ -441,8 +443,11 @@ export default function App() {
                 viewport={{ once: true }}
                 className="space-y-8"
               >
-                <p className="text-xl md:text-2xl text-zinc-400 font-light leading-relaxed">
-                  Mi trabajo es una búsqueda constante por la verdad visual. Me especializo en narrativas que exploran la condición humana, combinando una estética cruda con una ejecución cinematográfica de vanguardia.
+                <p className="text-xl md:text-2xl text-zinc-400 font-light leading-relaxed text-justify mb-6">
+                  Capturando la esencia a través de la lente. Mi mayor fortaleza es el storytelling visual, creando historias que no solo trascienden la pantalla, sino que conectan de forma magnética con las audiencias.
+                </p>
+                <p className="text-xl md:text-2xl text-zinc-400 font-light leading-relaxed text-justify">
+                  Me especializo en transformar la visión de cada proyecto en narrativas emocionales memorables. Entiendo el poder de la estética cinematográfica para elevar el mensaje de una marca, generando un impacto genuino que inspira acción y resultados.
                 </p>
                 <div className="grid grid-cols-2 gap-8 py-8 border-t border-white/10">
                   <div>
@@ -478,8 +483,8 @@ export default function App() {
               <h2 className="text-3xl md:text-5xl font-bold tracking-tight text-black uppercase mb-8">
                 Narrativas Visuales <br />que Redefinen la Estética
               </h2>
-              <p className="text-xl text-zinc-500 italic font-light leading-relaxed mb-12">
-                "Mi propósito no es solo filmar; es crear piezas de arte cinematográfico que eleven la historia y perduren en la memoria emocional de quien las ve."
+              <p className="text-xl text-zinc-500 italic font-light leading-relaxed mb-12 text-justify">
+                "Mi propósito va más allá de filmar; es diseñar piezas de arte cinematográfico que doten de alma a cada visión, logrando que el mensaje de una marca se quede a vivir en la memoria de quien lo experimenta."
               </p>
               <div className="grid gap-8 grid-cols-2 md:grid-cols-4">
                 {['Innovation', 'Craft', 'Impact', 'Versatility'].map((val) => (
